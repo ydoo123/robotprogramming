@@ -21,10 +21,10 @@ def eye_aspect_ratio(eye):
     C = dist.euclidean(eye[0], eye[3])
 
     # compute the eye aspect ratio
-    ear = (A + B) / (2.0 * C)
+    eye_aspect_ratio_value = (A + B) / (2.0 * C)
 
     # return the eye aspect ratio
-    return ear
+    return eye_aspect_ratio_value
 
 
 # construct the argument parse and parse the arguments
@@ -32,8 +32,8 @@ ap = argparse.ArgumentParser()
 ap.add_argument(
     "-p",
     "--shape-predictor",
-    default="shape_predictor_68_face_landmarks.dat",
-    help="path to facial landmark predictor",
+    default="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
+    help="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
 )
 ap.add_argument(
     "-v", "--video", type=str, default="camera", help="path to input video file"
@@ -55,6 +55,7 @@ ap.add_argument(
 
 
 def main():
+    ear = 0
     args = vars(ap.parse_args())
     EYE_AR_THRESH = args["threshold"]
     EYE_AR_CONSEC_FRAMES = args["frames"]
