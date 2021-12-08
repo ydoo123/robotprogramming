@@ -42,7 +42,7 @@ ap.add_argument(
     "-t",
     "--threshold",
     type=float,
-    default=0.27,
+    default=0.20,
     help="threshold to determine closed eyes",
 )
 ap.add_argument(
