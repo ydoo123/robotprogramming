@@ -13,7 +13,7 @@ time.sleep(2)
 speaker.frequency = 1975
 time.sleep(2)
 
-speaker.volume = 100
+speaker.volume = 20
 time.sleep(2)
 
 speaker.turn_off()
