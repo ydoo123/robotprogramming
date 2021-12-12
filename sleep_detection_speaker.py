@@ -51,7 +51,6 @@ ap.add_argument(
     default="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
     help="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
 )
-ap.add_argument("-a", "--alarm", type=str, default="", help="path alarm .WAV file")
 ap.add_argument("-w", "--webcam", type=int, default=0, help="index of webcam on system")
 args = vars(ap.parse_args())
 
@@ -87,19 +86,18 @@ bundle = modi.MODI()
 gyro = bundle.gyros[0]
 speaker = bundle.speakers[0]
 
-
 speaker.tune = 3591, 50
 speaker.frequency = 1975
 speaker.volume = 0
-
+speaker_is_on = False
 
 start_time = 0
 
-
 while True:
     current_time = time.time()
-    if current_time - start_time >= 2 and speaker.volume == 100:
+    if (current_time - start_time) >= 2 and speaker_is_on == True:
         speaker.volume = 0
+        speaker_is_on = False
 
     # grab the frame from the threaded video file stream, resize
     # it, and convert it to grayscale
@@ -138,7 +136,8 @@ while True:
             # then sound the alarm
             if COUNTER >= EYE_AR_CONSEC_FRAMES:
                 start_time = time.time()
-                speaker.volume = 100
+                speaker_is_on = True
+                speaker.volume = 10
 
                 # draw an alarm on the frame
                 cv2.putText(
@@ -168,9 +167,9 @@ while True:
             2,
         )
     if check_vel(gyro) == True or check_pitch(gyro) == True:
-        speaker.volume = 100
+        speaker_is_on = True
+        speaker.volume = 10
         start_time = time.time()
-
 
     # show the frame
     cv2.imshow("Frame", frame)

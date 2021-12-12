@@ -51,8 +51,7 @@ ap.add_argument(
     default="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
     help="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
 )
-ap.add_argument("-a", "--alarm", type=str, default="", help="path alarm .WAV file")
-ap.add_argument("-w", "--webcam", type=int, default=0, help="index of webcam on system")
+ap.add_argument("-w", "--webcam", type=int, default=1, help="index of webcam on system")
 args = vars(ap.parse_args())
 
 
