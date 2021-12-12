@@ -55,7 +55,6 @@ ap.add_argument(
 
 
 def main():
-    count_arr = []
     
     ear = 0
     args = vars(ap.parse_args())
@@ -135,6 +134,7 @@ def main():
             # threshold, and if so, increment the blink frame counter
             if ear < EYE_AR_THRESH:
                 COUNTER += 1
+                
 
             # otherwise, the eye aspect ratio is not below the blink
             # threshold
@@ -143,6 +143,9 @@ def main():
                 # then increment the total number of blinks
                 if COUNTER >= EYE_AR_CONSEC_FRAMES:
                     TOTAL += 1
+                
+                elif COUNTER >= 4:
+                    print('you sleep')
 
 
                 # reset the eye frame counter
