@@ -26,7 +26,6 @@ def eye_aspect_ratio(eye):
 
 
 def check_vel(gyro):
-
     vel_x = gyro.angular_vel_x
     vel_y = gyro.angular_vel_y
     vel_z = gyro.angular_vel_z
@@ -34,7 +33,7 @@ def check_vel(gyro):
     if abs(vel_x) > 10 or abs(vel_y) > 10:
         return False
 
-    if abs(vel_z) > 15 and abs(vel_x) < 10 and abs(vel_y) < 13:
+    if abs(vel_z) > 10 and abs(vel_x) < 10 and abs(vel_y) < 13:
         return True
 
     return False
@@ -76,7 +75,7 @@ predictor = dlib.shape_predictor(args["shape_predictor"])
 # start the video stream thread
 print("[INFO] starting video stream thread...")
 vs = VideoStream(src=args["webcam"]).start()
-time.sleep(1.0)
+time.sleep(0.5)
 # loop over frames from the video stream
 
 bundle = modi.MODI()
@@ -134,7 +133,7 @@ while True:
             if COUNTER >= EYE_AR_CONSEC_FRAMES and speaker_is_on == False:
                 start_time = time.time()
                 speaker_is_on = True
-                speaker.volume = 10
+                speaker.volume = 70
 
                 # draw an alarm on the frame
                 cv2.putText(
@@ -167,7 +166,7 @@ while True:
     if check_vel(gyro) == True:
         start_time = time.time()
         speaker_is_on = True
-        speaker.volume = 10
+        speaker.volume = 70
 
     # show the frame
     cv2.imshow("Frame", frame)
