@@ -26,18 +26,15 @@ def eye_aspect_ratio(eye):
 
 
 def check_vel(gyro):
+
+    vel_x = gyro.angular_vel_x
+    vel_y = gyro.angular_vel_y
     vel_z = gyro.angular_vel_z
 
-    if abs(vel_z) > 40:
-        return True
+    if abs(vel_x) > 10 or abs(vel_y) > 10:
+        return False
 
-    return False
-
-
-def check_pitch(gyro):
-    pitch = gyro.pitch
-
-    if pitch < -90:
+    if abs(vel_z) > 15 and abs(vel_x) < 10 and abs(vel_y) < 13:
         return True
 
     return False
@@ -51,7 +48,7 @@ ap.add_argument(
     default="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
     help="D:\\univ\\robotprogramming\\shape_predictor_68_face_landmarks.dat",
 )
-ap.add_argument("-w", "--webcam", type=int, default=0, help="index of webcam on system")
+ap.add_argument("-w", "--webcam", type=int, default=1, help="index of webcam on system")
 args = vars(ap.parse_args())
 
 
@@ -59,8 +56,8 @@ args = vars(ap.parse_args())
 # blink and then a second constant for the number of consecutive
 # frames the eye must be below the threshold for to set off the
 # alarm
-EYE_AR_THRESH = 0.21
-EYE_AR_CONSEC_FRAMES = 50
+EYE_AR_THRESH = 0.20
+EYE_AR_CONSEC_FRAMES = 30
 # initialize the frame counter as well as a boolean used to
 # indicate if the alarm is going off
 COUNTER = 0
@@ -96,8 +93,8 @@ start_time = 0
 while True:
     current_time = time.time()
     if (current_time - start_time) >= 2 and speaker_is_on == True:
-        speaker.volume = 0
         speaker_is_on = False
+        speaker.volume = 0
 
     # grab the frame from the threaded video file stream, resize
     # it, and convert it to grayscale
@@ -134,7 +131,7 @@ while True:
             COUNTER += 1
             # if the eyes were closed for a sufficient number of
             # then sound the alarm
-            if COUNTER >= EYE_AR_CONSEC_FRAMES:
+            if COUNTER >= EYE_AR_CONSEC_FRAMES and speaker_is_on == False:
                 start_time = time.time()
                 speaker_is_on = True
                 speaker.volume = 10
@@ -166,10 +163,11 @@ while True:
             (0, 0, 255),
             2,
         )
-    if check_vel(gyro) == True or check_pitch(gyro) == True:
+
+    if check_vel(gyro) == True:
+        start_time = time.time()
         speaker_is_on = True
         speaker.volume = 10
-        start_time = time.time()
 
     # show the frame
     cv2.imshow("Frame", frame)

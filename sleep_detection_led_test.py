@@ -84,14 +84,9 @@ vs = VideoStream(src=args["webcam"]).start()
 time.sleep(1.0)
 # loop over frames from the video stream
 
-bundle = modi.MODI(conn_type="ble", network_uuid="F489FFC7")
-bundle_2 = modi.MODI(conn_type='ser')
-
+bundle = modi.MODI()
 gyro = bundle.gyros[0]
 led = bundle.leds[0]
-
-button = bundle_2.buttons[0]
-
 led.rgb = 100, 100, 100
 led.turn_off()
 

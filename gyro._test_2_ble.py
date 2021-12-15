@@ -6,7 +6,7 @@ import os
 
 if __name__ == "__main__":
 
-    bundle = modi.MODI()
+    bundle = modi.MODI(conn_type="ble", network_uuid="F489FFC7")
     gyro = bundle.gyros[0]
     speaker = bundle.speakers[0]
 

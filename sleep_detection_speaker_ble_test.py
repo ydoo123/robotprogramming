@@ -26,20 +26,22 @@ def eye_aspect_ratio(eye):
 
 
 def check_vel(gyro):
+    vel_x = gyro.angular_vel_x
+    vel_y = gyro.angular_vel_y
     vel_z = gyro.angular_vel_z
 
-    if abs(vel_z) > 40:
+    if abs(vel_x) > 10 or abs(vel_y) > 10:
+        return False
+
+    if abs(vel_z) > 15 and abs(vel_x) < 10 and abs(vel_y) < 13:
         return True
 
     return False
 
 
-def check_pitch(gyro):
-    pitch = gyro.pitch
-
-    if pitch < -90:
+def cheak_time(current_time, terminal_start_time):
+    if abs(current_time - terminal_start_time) >= 3000:
         return True
-
     return False
 
 
@@ -59,13 +61,11 @@ args = vars(ap.parse_args())
 # blink and then a second constant for the number of consecutive
 # frames the eye must be below the threshold for to set off the
 # alarm
-EYE_AR_THRESH = 0.21
-EYE_AR_CONSEC_FRAMES = 50
+EYE_AR_THRESH = 0.20
+EYE_AR_CONSEC_FRAMES = 30
 # initialize the frame counter as well as a boolean used to
 # indicate if the alarm is going off
 COUNTER = 0
-sleep_count = 0
-is_led_on = False
 
 # initialize dlib's face detector (HOG-based) and then create
 # the facial landmark predictor
@@ -85,24 +85,28 @@ time.sleep(1.0)
 # loop over frames from the video stream
 
 bundle = modi.MODI(conn_type="ble", network_uuid="F489FFC7")
-bundle_2 = modi.MODI(conn_type='ser')
-
 gyro = bundle.gyros[0]
-led = bundle.leds[0]
+speaker = bundle.speakers[0]
 
-button = bundle_2.buttons[0]
-
-led.rgb = 100, 100, 100
-led.turn_off()
+speaker.tune = 3591, 50
+speaker.frequency = 1975
+speaker.volume = 0
+speaker_is_on = False
 
 start_time = 0
-
+terminal_start_time = time.time()
 
 while True:
     current_time = time.time()
-    if current_time - start_time >= 2 and is_led_on == True:
-        led.turn_off()
-        is_led_on = False
+    if (current_time - start_time) >= 2 and speaker_is_on == True:
+        speaker_is_on = False
+        speaker.volume = 0
+
+    if cheak_time(current_time, terminal_start_time) == True and speaker_is_on == False:
+        speaker.volume = 60
+        speaker_is_on = True
+        terminal_start_time = time.time()
+
     # grab the frame from the threaded video file stream, resize
     # it, and convert it to grayscale
     # channels)
@@ -138,10 +142,10 @@ while True:
             COUNTER += 1
             # if the eyes were closed for a sufficient number of
             # then sound the alarm
-            if COUNTER >= EYE_AR_CONSEC_FRAMES:
+            if COUNTER >= EYE_AR_CONSEC_FRAMES and speaker_is_on == False:
                 start_time = time.time()
-                is_led_on = True
-                led.turn_on()
+                speaker_is_on = True
+                speaker.volume = 10
 
                 # draw an alarm on the frame
                 cv2.putText(
@@ -170,10 +174,11 @@ while True:
             (0, 0, 255),
             2,
         )
-    if check_vel(gyro) == True or check_pitch(gyro) == True:
-        led.turn_on()
+
+    if check_vel(gyro) == True:
         start_time = time.time()
-        is_led_on = True
+        speaker_is_on = True
+        speaker.volume = 10
 
     # show the frame
     cv2.imshow("Frame", frame)

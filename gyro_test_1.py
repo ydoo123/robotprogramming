@@ -32,7 +32,10 @@ def check_pitch(gyro):
     return False
 
 
-bundle = modi.MODI()
+bundle = modi.MODI(
+    conn_type = 'ble',
+    network_uuid = "F489FFC7"
+)
 gyro = bundle.gyros[0]
 speaker = bundle.speakers[0]
 
